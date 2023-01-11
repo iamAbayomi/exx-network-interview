@@ -1,0 +1,42 @@
+.logo{
+    color: #1D2A65;
+}
+
+.payment-container{
+    background-color: white;
+    border-radius: 10px;
+}
+
+.bsc-button{
+  background: rgba(255, 255, 255, 0.4);
+  padding: 10px 35px 10px 35px;
+  box-sizing: border-box;
+  border-radius: 9px;
+  color: #111315;
+}
+
+.bsc-button-text{
+    font-family: 'DM Sans';
+}
+
+.hash-button{
+    height: 57px;
+    border: 1px solid #174AFF;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 12px 35px 12px 35px;
+    box-sizing: border-box;
+    border-radius: 9px;
+}
+
+.hash-button-text{
+    color: #174AFF;
+}
+
+.balance-button{
+   color: #174AFF;
+   background: rgba(255, 255, 255, 0.4);
+   padding: 12px 20px 12px 20px;
+   box-sizing: border-box;
+   border-radius: 9px;
+   
+}
