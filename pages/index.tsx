@@ -96,7 +96,7 @@ export default function Home() {
   }
 
   return (
-    <div className="pt-9 px-24">
+    <div className="pt-9 mx-5  sm:px-24">
       <div className="flex justify-between mb-32">
         <div>
           <p className="logo font-bold text-2xl">Logo here</p>
