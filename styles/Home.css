@@ -88,3 +88,7 @@
     /* border-image-source: linear-gradient(269.99deg, #174AFF -32.27%, #00D9AC 87.31%); */
     border-color:  #00D9AC;
 }
+
+input:focus {
+    outline: none;
+}
