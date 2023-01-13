@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
       />
 
       <Component {...pageProps} />
-      <ToastContainer position="bottom-center" />
+      <ToastContainer position="bottom-center" delay={4000} />
     </div>
   );
 }

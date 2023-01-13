@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { ethers, Contract, BigNumber } from "ethers";
-import { hideWalletAddress } from "../utils/helper";
+import { hideWalletAddress, useGetProvider } from "../utils/helper";
 import { IAccountDetails } from "../types";
 import { accountDetailsData, USDT_ABI } from "../utils/dummyData";
+import { toast } from "react-toast";
 
 export default function Home() {
   const [isWalletAddress, setIsWalletAddress] = useState<boolean>(false);
@@ -13,6 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     if (account.length > 2) {
+      console.log("account in useEffect ", account);
       getUSDTBalance(account);
     }
   }, [account]);
@@ -53,50 +55,48 @@ export default function Home() {
     const abi = ["function buy() public payable"];
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
+
     await window.ethereum.request({ method: "eth_requestAccounts" });
-    const accounts = await provider.listAccounts();
-    console.log(accounts);
+
     const signer = provider.getSigner();
     const Contract = new ethers.Contract(
       "0xDA497727316FBDD71D2b555041035c6641c0D85F",
       abi,
       signer
     );
-    const tx = await Contract.buy({
-      value: ethers.utils.parseEther(value),
-      gasLimit: "34438"
-    });
-    const response = await tx.wait();
-    console.log(response);
-  }
 
-  async function connectWallet1() {
-    const abi = ["function buy() public payable"];
-    const provider: ethers.providers.Web3Provider =
-      new ethers.providers.Web3Provider(window.ethereum);
+    try {
+      const tx = await Contract.buy({
+        value: ethers.utils.parseEther(value),
+        gasLimit: "34438"
+      });
 
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const accounts = await provider.listAccounts();
-    console.log("accounts", accounts);
-    await getUSDTBalance(accounts[0]);
+      const response = await tx.wait();
+
+      console.log(response);
+    } catch (err) {
+      toast.error("Transaction rejected");
+    }
   }
 
   async function connectWallet() {
-    if (window.ethereum === undefined) return;
+    if (window.ethereum === undefined) {
+      toast.error("MetaMeask is not installed. Please install MetaMask");
+      return;
+    }
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
-
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const accounts = await provider.listAccounts();
+
     if (accounts) {
-      console.log("accounts", accounts);
       setAccount(accounts[0]);
       toggleWalletAddress();
     }
   }
 
   return (
-    <div className="pt-9 px-24">
+    <div className="pt-9 mx-5  sm:px-24">
       <div className="flex justify-between mb-32">
         <div>
           <p className="logo font-bold text-2xl">Logo here</p>
@@ -181,7 +181,7 @@ export default function Home() {
         </div>
 
         <div className="">
-          {accountDetails.balance ? (
+          {accountDetails.name.length > 2 ? (
             <button className="balance-button mb-2.5 max-[1280px]:hidden">
               <p className="text-sm font-bold">
                 Your bal:{" "}
