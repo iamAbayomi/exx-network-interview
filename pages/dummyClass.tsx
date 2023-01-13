@@ -1,29 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ethers, Contract, BigNumber } from "ethers";
-import { hideWalletAddress } from "../utils/helper";
-import { IAccountDetails } from "../types";
-import { accountDetailsData, USDT_ABI } from "../utils/dummyData";
 
 export default function Home() {
-  const [isWalletAddress, setIsWalletAddress] = useState<boolean>(false);
-  const [account, setAccount] = useState<string>("");
-  const [accountDetails, setAccountDetails] =
-    useState<IAccountDetails>(accountDetailsData);
-  const [amountToBuy, setAmountToBuy] = useState<string>("");
-
-  useEffect(() => {
-    if (account.length > 2) {
-      getUSDTBalance(account);
-    }
-  }, [account]);
+  const [walletAddress, setWalletAddress] = useState<boolean>(true);
+  const [tokenInfo, setTokenInfo] = useState({});
+  const USDT_ABI = [
+    "function balanceOf(address account) external view returns (uint256)",
+    "function totalSupply() external view returns (uint256)",
+    "function symbol() external view returns (string memory)",
+    "function name() external view returns (string memory)"
+  ];
 
   function toggleWalletAddress() {
-    setIsWalletAddress(!isWalletAddress);
-  }
-
-  function onAmountToBuyChanged(event: { target: { value: string } }) {
-    console.log("value ", event.target.value);
-    setAmountToBuy(event.target.value);
+    setWalletAddress(!walletAddress);
   }
 
   async function getUSDTBalance(address: string) {
@@ -41,20 +30,26 @@ export default function Home() {
     const symbol = await USDT.symbol();
 
     console.log(name, symbol, balance.toString(), totalSupply.toString());
-
-    setAccountDetails({
-      name,
-      symbol,
-      balance: balance.toString()
-    });
   }
 
-  async function buy(value: string) {
+  async function buy() {
     const abi = ["function buy() public payable"];
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
+    // const chainId = await provider.getNetwork()
+    // window.ethereum.on("connect", () => console.log("heyy connect again"))
+    // window.ethereum.on("accountsChanged", () => console.log("hey changed it back"))
+    // window.ethereum.on("chainChanged", () => console.log("hey invalid chain"))
+    // if (!window.ethereum) {
+    //   console.log("no metamask")
+    // }
+    // if (chainId !== 56) {
+    //   console.log("Invalid chain id")
+    // }
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const accounts = await provider.listAccounts();
+    // await getUSDTBalance(accounts[0]);
+    // Call the Smart Contract
     console.log(accounts);
     const signer = provider.getSigner();
     const Contract = new ethers.Contract(
@@ -63,36 +58,39 @@ export default function Home() {
       signer
     );
     const tx = await Contract.buy({
-      value: ethers.utils.parseEther(value),
+      value: ethers.utils.parseEther("0.05"),
       gasLimit: "34438"
     });
     const response = await tx.wait();
     console.log(response);
   }
 
-  async function connectWallet1() {
+  async function connectWallet() {
     const abi = ["function buy() public payable"];
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
-
+    // const chainId = await provider.getNetwork()
+    // window.ethereum.on("connect", () => console.log("heyy connect again"))
+    // window.ethereum.on("accountsChanged", () => console.log("hey changed it back"))
+    // window.ethereum.on("chainChanged", () => console.log("hey invalid chain"))
+    // if (!window.ethereum) {
+    //   console.log("no metamask")
+    // }
+    // if (chainId !== 56) {
+    //   console.log("Invalid chain id")
+    // }
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const accounts = await provider.listAccounts();
+
     console.log("accounts", accounts);
-    await getUSDTBalance(accounts[0]);
-  }
-
-  async function connectWallet() {
-    if (window.ethereum === undefined) return;
-    const provider: ethers.providers.Web3Provider =
-      new ethers.providers.Web3Provider(window.ethereum);
-
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const accounts = await provider.listAccounts();
-    if (accounts) {
-      console.log("accounts", accounts);
-      setAccount(accounts[0]);
-      toggleWalletAddress();
-    }
+    // await getUSDTBalance(accounts[0]);
+    // Call the Smart Contract
+    // console.log(accounts)
+    // const signer = provider.getSigner();
+    // const Contract = new ethers.Contract("0xDA497727316FBDD71D2b555041035c6641c0D85F", abi, signer);
+    // const tx = await Contract.buy({value: ethers.utils.parseEther("0.05"), gasLimit: "34438"});
+    // const response = await tx.wait();
+    // console.log(response)
   }
 
   return (
@@ -102,7 +100,7 @@ export default function Home() {
           <p className="logo font-bold text-2xl">Logo here</p>
         </div>
         <div className="max-[1280px]:hidden">
-          {isWalletAddress ? (
+          {walletAddress ? (
             <div className="flex items-center text-sm">
               <button className="flex mr-10">
                 <img src="download-icon.svg" />
@@ -116,7 +114,7 @@ export default function Home() {
               </button>
               <button className="hash-button" onClick={toggleWalletAddress}>
                 <p className="hash-button-text font-bold">
-                  {hideWalletAddress(account)}
+                  3FZbgi29.........V8eyH
                 </p>
               </button>
             </div>
@@ -181,17 +179,9 @@ export default function Home() {
         </div>
 
         <div className="">
-          {accountDetails.balance ? (
-            <button className="balance-button mb-2.5 max-[1280px]:hidden">
-              <p className="text-sm font-bold">
-                Your bal:{" "}
-                {accountDetails?.balance + " " + accountDetails?.symbol}
-              </p>
-            </button>
-          ) : (
-            <></>
-          )}
-
+          <button className="balance-button mb-2.5 max-[1280px]:hidden">
+            <p className="text-sm font-bold">Your bal: 0.0000034 USDT</p>
+          </button>
           <div className="payment-container max-w-lg px-5 py-5">
             <div className="flex items-center justify-between">
               <div>
@@ -209,21 +199,13 @@ export default function Home() {
               <p className="font-bold">Enter amount to buy</p>
               <div className="flex gap-2.5 w-full h-full sm:items-center mt-2.5 flex-col sm:flex-row">
                 <div className="flex justify-between w-full h-full px-[18px] pl-[20px] pr-2px input-container">
-                  <input
-                    value={amountToBuy}
-                    onChange={onAmountToBuyChanged}
-                    className="hover:border-white"
-                    placeholder="00.00 USDT"
-                  />
-                  <div className="max-[680px]:hidden">
+                  <input className="" placeholder="00.00 USDT" />
+                  <div className="sm:hidden">
                     <div />
                     <p color="#111315">00.00 EXX</p>
                   </div>
                 </div>
-                <button
-                  className="buy-btn rounded-[10px] dm-sans text-sm"
-                  onClick={() => buy(amountToBuy)}
-                >
+                <button className="buy-btn rounded-[10px] dm-sans text-sm">
                   Buy
                 </button>
               </div>

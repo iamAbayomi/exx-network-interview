@@ -1,0 +1,94 @@
+.logo{
+    color: #1D2A65;
+}
+
+.payment-container{
+    background-color: white;
+    border-radius: 10px;
+}
+
+.bsc-button{
+  background: rgba(255, 255, 255, 0.4);
+  padding: 10px 35px 10px 35px;
+  box-sizing: border-box;
+  border-radius: 9px;
+  color: #111315;
+}
+
+.bsc-button-text{
+    font-family: 'DM Sans';
+}
+
+
+.hash-button{
+    height: 57px;
+    border: 1px solid #174AFF;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 12px 35px 12px 35px;
+    box-sizing: border-box;
+    border-radius: 9px;
+}
+
+.hash-button-text{
+    color: #174AFF;
+}
+
+.wallet-btn{
+    
+}
+
+.balance-button{
+   color: #174AFF;
+   background: rgba(255, 255, 255, 0.4);
+   padding: 12px 20px 12px 20px;
+   box-sizing: border-box;
+   border-radius: 9px;
+   
+}
+
+.price-container{
+    font-family: 'DM Sans';
+}
+
+.badge{
+    background: #FFCB67;
+    padding: 13px 24px;
+    border-radius: 20px;
+}
+
+.sale-progress-text{
+    color: rgba(17, 19, 21, 0.63);
+}
+
+.input-container{
+    padding: 10px 15px;
+    border: 1.03958px solid #0077FE;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.buy-btn{
+    background:  #174AFF;
+    color:white;
+    padding: 13px 40px;
+    box-sizing: border-box;
+}
+
+
+.disclaimer-description{
+    color: rgba(17, 19, 21, 0.6);;
+}
+
+.description{
+    color:  rgba(0, 14, 72, 0.62);;
+}
+
+.straight-line{
+    border: 1px solid; 
+    /* border-image-source: linear-gradient(269.99deg, #174AFF -32.27%, #00D9AC 87.31%); */
+    border-color:  #00D9AC;
+}
+
+input:focus {
+    outline: none;
+}

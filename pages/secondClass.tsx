@@ -1,15 +1,27 @@
 import { useEffect, useState } from "react";
 import { ethers, Contract, BigNumber } from "ethers";
-import { hideWalletAddress } from "../utils/helper";
-import { IAccountDetails } from "../types";
-import { accountDetailsData, USDT_ABI } from "../utils/dummyData";
 
 export default function Home() {
   const [isWalletAddress, setIsWalletAddress] = useState<boolean>(false);
+  const [tokenInfo, setTokenInfo] = useState({});
   const [account, setAccount] = useState<string>("");
-  const [accountDetails, setAccountDetails] =
-    useState<IAccountDetails>(accountDetailsData);
+  const [accountDetails, setAccountDetails] = useState<{
+    name: string;
+    symbol: string;
+    balance: string;
+  }>({
+    name: "",
+    symbol: "",
+    balance: ""
+  });
   const [amountToBuy, setAmountToBuy] = useState<string>("");
+
+  const USDT_ABI = [
+    "function balanceOf(address account) external view returns (uint256)",
+    "function totalSupply() external view returns (uint256)",
+    "function symbol() external view returns (string memory)",
+    "function name() external view returns (string memory)"
+  ];
 
   useEffect(() => {
     if (account.length > 2) {
@@ -21,12 +33,22 @@ export default function Home() {
     setIsWalletAddress(!isWalletAddress);
   }
 
+  function hideWalletAddress(walletAddress: string) {
+    return (
+      walletAddress.substring(0, 8) +
+      "........" +
+      walletAddress.substring(walletAddress.length - 5, walletAddress.length)
+    );
+  }
+
   function onAmountToBuyChanged(event: { target: { value: string } }) {
     console.log("value ", event.target.value);
     setAmountToBuy(event.target.value);
   }
 
   async function getUSDTBalance(address: string) {
+    console.log("0st I am here");
+
     const provider = new ethers.providers.JsonRpcProvider(
       "https://data-seed-prebsc-1-s1.binance.org:8545/"
     );
@@ -40,6 +62,8 @@ export default function Home() {
     const name = await USDT.name();
     const symbol = await USDT.symbol();
 
+    console.log("1st I am here");
+
     console.log(name, symbol, balance.toString(), totalSupply.toString());
 
     setAccountDetails({
@@ -47,14 +71,28 @@ export default function Home() {
       symbol,
       balance: balance.toString()
     });
+
+    console.log("2nd I am here");
   }
 
   async function buy(value: string) {
     const abi = ["function buy() public payable"];
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
+    // const chainId = await provider.getNetwork()
+    // window.ethereum.on("connect", () => console.log("heyy connect again"))
+    // window.ethereum.on("accountsChanged", () => console.log("hey changed it back"))
+    // window.ethereum.on("chainChanged", () => console.log("hey invalid chain"))
+    // if (!window.ethereum) {
+    //   console.log("no metamask")
+    // }
+    // if (chainId !== 56) {
+    //   console.log("Invalid chain id")
+    // }
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const accounts = await provider.listAccounts();
+    // await getUSDTBalance(accounts[0]);
+    // Call the Smart Contract
     console.log(accounts);
     const signer = provider.getSigner();
     const Contract = new ethers.Contract(
@@ -74,18 +112,32 @@ export default function Home() {
     const abi = ["function buy() public payable"];
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
-
+    // const chainId = await provider.getNetwork()
+    // window.ethereum.on("connect", () => console.log("heyy connect again"))
+    // window.ethereum.on("accountsChanged", () => console.log("hey changed it back"))
+    // window.ethereum.on("chainChanged", () => console.log("hey invalid chain"))
+    // if (!window.ethereum) {
+    //   console.log("no metamask")
+    // }
+    // if (chainId !== 56) {
+    //   console.log("Invalid chain id")
+    // }
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const accounts = await provider.listAccounts();
     console.log("accounts", accounts);
     await getUSDTBalance(accounts[0]);
+    // Call the Smart Contract
+    // console.log(accounts)
+    // const signer = provider.getSigner();
+    // const Contract = new ethers.Contract("0xDA497727316FBDD71D2b555041035c6641c0D85F", abi, signer);
+    // const tx = await Contract.buy({value: ethers.utils.parseEther("0.05"), gasLimit: "34438"});
+    // const response = await tx.wait();
+    // console.log(response)
   }
 
   async function connectWallet() {
-    if (window.ethereum === undefined) return;
     const provider: ethers.providers.Web3Provider =
       new ethers.providers.Web3Provider(window.ethereum);
-
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const accounts = await provider.listAccounts();
     if (accounts) {
@@ -116,6 +168,7 @@ export default function Home() {
               </button>
               <button className="hash-button" onClick={toggleWalletAddress}>
                 <p className="hash-button-text font-bold">
+                  {/* 3FZbgi29.........V8eyH */}
                   {hideWalletAddress(account)}
                 </p>
               </button>
